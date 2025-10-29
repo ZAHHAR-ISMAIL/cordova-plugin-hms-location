@@ -1,0 +1,25 @@
+{
+  "fileVersion": "1",
+  "name": "Cordova-Hms-Location",
+  "description": "Cordova HMS Location Plugin",
+  "zipName": "cordova-location-package",
+  "packageName": "cordova-plugin-hms-location",
+  "version": "6.16.0.300",
+  "type": "microService",
+  "processes": {
+    "Cordova-Hms-Location": {
+      "subscribes": []
+    }
+  },
+  "files": [
+    "hooks",
+    "ionic-native",
+    "src",
+    "types",
+    "www",
+    "LICENSE",
+    "package.json",
+    "plugin.xml",
+    "README.md"
+  ]
+}

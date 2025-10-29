@@ -1,0 +1,29 @@
+{
+  "fileVersion": "1",
+  "name": "Ionic-Hms-Location-Demo",
+  "description": "A demo application which shows the usage of HMS Location Plugin.",
+  "zipName": "ionic-hms-location-demo",
+  "packageName": "ionic-hms-location-demo",
+  "version": "6.16.0.300",
+  "type": "microService",
+  "processes": {
+    "Cordova-Hms-Location-Demo": {
+      "subscribes": []
+    }
+  },
+  "files": [
+    "e2e",
+    "src",
+    "angular.json",
+    "ionic.config.json",
+    "karma.conf.js",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "tsconfig.app.json",
+    "tsconfig.json",
+    "tsconfig.spec.json",
+    "tslint.json",
+    "OpenSourceSoftwareNotice.html"
+  ]
+}
