@@ -154,5 +154,8 @@
         <source-file
                 src="src/android/src/main/java/com/huawei/hms/cordova/location/utils/LocationUtils.java"
                 target-dir="src/com/huawei/hms/cordova/location/utils/" />
+        <source-file
+                src="src/android/src/main/java/com/huawei/hms/cordova/location/utils/GPSUtil.java"
+                target-dir="src/com/huawei/hms/cordova/location/utils/" />
     </platform>
 </plugin>
