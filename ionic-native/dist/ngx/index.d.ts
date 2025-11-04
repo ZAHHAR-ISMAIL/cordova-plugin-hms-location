@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,12 +13,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import { IonicNativePlugin } from '@ionic-native/core';
-export declare class HMSLocation extends IonicNativePlugin {
+
+import { AwesomeCordovaNativePlugin } from '@awesome-cordova-plugins/core';
+export declare class HMSLocation extends AwesomeCordovaNativePlugin {
     getGeofenceService(): GeofenceService;
     getGeocoderService(language: string, country?: string): GeocoderService;
     getFusedLocationProviderClient(): FusedLocationService;
     getActivityIdentificationService(): ActivityIdentificationService;
+    getCoordinateConversionService(): CoordinateConversionService;
     addListener(event: Events, callback: (data: LocationResult | [] | ActivityConversionResponse | ActivityIdentificationResponse) => void): any;
     disableLogger(): Promise<void>;
     enableLogger(): Promise<void>;
@@ -52,6 +54,9 @@ export interface GeofenceService {
 export interface GeocoderService {
     getFromLocation(getFromLocationRequest: GetFromLocationRequest): Promise<HWLocation[]>;
     getFromLocationName(getFromLocationNameRequest: GetFromLocationNameRequest): Promise<HWLocation[]>;
+}
+export interface CoordinateConversionService {
+    convertCoord(latitude: number, longitude: number, coordType: number): Promise<LonLat>;
 }
 export interface GetFromLocationRequest {
     latitude: number;
@@ -120,6 +125,7 @@ export interface HWLocation {
     verticalAccuracyMeters: number;
     bearingAccuracyDegrees: number;
     speedAccuracyMetersPerSecond: number;
+    coordinateType: number;
 }
 export interface LocationSettingsStates {
     isBlePresent: boolean;
@@ -143,6 +149,7 @@ export interface LocationRequest {
     needAddress?: boolean;
     language?: string;
     countryCode?: string;
+    coordinateType?: number;
 }
 export interface LocationSettingsRequest {
     locationRequests: LocationRequest[];
@@ -212,6 +219,10 @@ export interface ActivityIdentificationResponse {
     time: number;
     activityIdentificationDatas: ActivityIdentificationData[];
 }
+export interface LonLat {
+    longitude: number;
+    latitude: number;
+}
 export declare enum Events {
     ON_LOCATION_RESULT = "onLocationResult",
     ACTIVITY_CONVERSION_RESULT = "onActivityConversionResult",
@@ -223,7 +234,9 @@ export declare enum PriorityConstants {
     PRIORITY_BALANCED_POWER_ACCURACY = 102,
     PRIORITY_LOW_POWER = 104,
     PRIORITY_NO_POWER = 105,
-    PRIORITY_HD_ACCURACY = 200
+    PRIORITY_HD_ACCURACY = 200,
+    PRIORITY_INDOOR = 300,
+    PRIORITY_HIGH_ACCURACY_AND_INDOOR = 400
 }
 export declare enum NavigationRequestConstants {
     OVERPASS = 1,

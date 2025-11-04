@@ -1,0 +1,22 @@
+{
+  "fileVersion": "1",
+  "name": "Cordova-Hms-Location-Demo",
+  "description": "A demo application which shows the usage of HMS Location Plugin.",
+  "zipName": "cordova-hms-location-demo",
+  "packageName": "cordova-hms-location-demo",
+  "version": "6.16.0.300",
+  "type": "microService",
+  "processes": {
+    "Cordova-Hms-Location-Demo": {
+      "subscribes": []
+    }
+  },
+  "files": [
+    "www",
+    "config.xml",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "OpenSourceSoftwareNotice.html"
+  ]
+}

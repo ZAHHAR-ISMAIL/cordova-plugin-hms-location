@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -22,8 +22,14 @@ var ROOT_BUILD_GRADLE_FILE = "platforms/android/build.gradle";
 var APP_BUILD_GRADLE_FILE = "platforms/android/app/build.gradle"; // new added
 var ROOT_REPOSITORIES_GRADLE_FILE = "platforms/android/repositories.gradle";
 var APP_REPOSITORIES_GRADLE_FILE = "platforms/android/app/repositories.gradle";
+var APP_ANDROID_MANIFEST_FILE =
+  "platforms/android/app/src/main/AndroidManifest.xml";
 var COMMENT = "//This line is added by cordova-plugin-hms-location plugin";
 var NEW_LINE = "\n";
+
+var TARGET_ATTRIBUTE = "android:requestLegacyExternalStorage";
+var TARGET_VALUE = TARGET_ATTRIBUTE + '="true"';
+var TARGET_REGEX = new RegExp(TARGET_ATTRIBUTE + '="([^"]+)"');
 
 module.exports = function (context) {
   if (!FSUtils.exists(ROOT_BUILD_GRADLE_FILE)) {
@@ -37,6 +43,9 @@ module.exports = function (context) {
 
   var depAddedLines = addAGConnectDependency(lines);
   var repoAddedLines = addHuaweiRepo(depAddedLines);
+  depAddedLines = addR8Dependency(depAddedLines);
+
+  FSUtils.writeFile(ROOT_BUILD_GRADLE_FILE, depAddedLines.join(NEW_LINE));
 
   FSUtils.writeFile(ROOT_BUILD_GRADLE_FILE, repoAddedLines.join(NEW_LINE));
 
@@ -51,13 +60,34 @@ module.exports = function (context) {
     packageOptionsAddedLines.join(NEW_LINE)
   );
 
+  addAndroidManifestAttribute(APP_ANDROID_MANIFEST_FILE);
   updateRepositoriesGradle(ROOT_REPOSITORIES_GRADLE_FILE);
   updateRepositoriesGradle(APP_REPOSITORIES_GRADLE_FILE);
 };
 
+function addAndroidManifestAttribute(param) {
+  if (FSUtils.exists(param)) {
+    var data = FSUtils.readFile(param, "utf8");
+    var result;
+    if (!data.match(TARGET_ATTRIBUTE)) {
+      result = data.replace(/<application/g, "<application " + TARGET_VALUE);
+    } else if (data.match(TARGET_REGEX) && !data.match(TARGET_VALUE)) {
+      result = data.replace(TARGET_REGEX, TARGET_VALUE);
+    }
+
+    if (result) {
+      FSUtils.writeFile(param, result, "utf8", function (err) {
+        if (err) throw new Error("Unable to write AndroidManifest.xml: " + err);
+      });
+    }
+  } else {
+    console.log("Check Android Manifest file exist or not.");
+  }
+}
+
 function addAGConnectDependency(lines) {
   var AG_CONNECT_DEPENDENCY =
-    "classpath 'com.huawei.agconnect:agcp:1.9.1.300' " + COMMENT;
+    "classpath 'com.huawei.agconnect:agcp:1.9.3.300' " + COMMENT;
   var pattern =
     /(\s*)classpath(\s+)[\',\"]com.android.tools.build:gradle.*[^\]\n]/m;
   var index;
@@ -132,4 +162,27 @@ function updateRepositoriesGradle(file) {
       FSUtils.writeFile(file, repoGradleContent);
     }
   }
+}
+
+function addR8Dependency(lines) {
+  let R8_DEPENDENCY = 'classpath "com.android.tools:r8:8.3.37" ' + COMMENT;
+  let pattern =
+    /(\s*)classpath(\s+)[\',\"]com.android.tools.build:gradle.*[^\]\n]/m;
+  let index;
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    if (pattern.test(line)) {
+      index = i;
+      break;
+    }
+  }
+
+  if (index !== undefined) {
+    lines.splice(index + 1, 0, R8_DEPENDENCY);
+  } else {
+    console.log("Unable to find gradle dependencies block.");
+  }
+
+  return lines;
 }

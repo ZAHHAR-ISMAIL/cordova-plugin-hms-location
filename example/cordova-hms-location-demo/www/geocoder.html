@@ -1,0 +1,130 @@
+<!--
+    Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License")
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+        name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+</head>
+
+<body class="container-fluid mt-3">
+    <!-- Reverse Geocoding Request -->
+    <h3 class="alert alert-primary">Reverse Geocoding Request</h3>
+
+    <div class="input-group input-group-sm mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Longitude</span>
+        </div>
+        <input type="number" id="longitude" class="form-control" placeholder="Enter a longitude value. Default is 30.">
+    </div>
+
+    <div class="input-group input-group-sm mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Latitude</span>
+        </div>
+        <input type="number" id="latitude" class="form-control" placeholder="Enter a latitude value. Default is 40.">
+    </div>
+
+    <div class="input-group input-group-sm mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Max Result</span>
+        </div>
+        <input type="number" id="locationMaxResults" class="form-control"
+            placeholder="Enter a max result value. Default is 3.">
+    </div>
+
+    <button class="btn btn-primary btn-lg btn-block" id="getFromLocation" type="button">
+        Get From Location
+    </button>
+
+    <div style="width:100%;height:100px;background-color:#e5e7e9;overflow:auto;">
+        <label id="getFromLocationLog" style="margin:0;"></label>
+    </div>
+
+    <!-- Forward Geocoding Request -->
+    <h3 class="alert alert-primary mt-4">Forward Geocoding Request Information</h3>
+
+    <div class="input-group input-group-sm mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Location Name</span>
+        </div>
+        <input type="text" id="locationName" class="form-control" placeholder="Enter an address name.">
+    </div>
+
+    <div class="input-group input-group-sm mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Max Result</span>
+        </div>
+        <input type="number" id="locationNameMaxResults" class="form-control"
+            placeholder="Enter a max result value. Default is 3.">
+    </div>
+
+    <div class="input-group input-group-sm mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Lower Left Latitude</span>
+        </div>
+        <input type="number" id="lowerLeftLatitude" class="form-control"
+            placeholder="Enter a lower-left latitude value.">
+    </div>
+
+    <div class="input-group input-group-sm mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Lower Left Longitude</span>
+        </div>
+        <input type="number" id="lowerLeftLongitude" class="form-control"
+            placeholder="Enter a lower-left longitude value.">
+    </div>
+
+    <div class="input-group input-group-sm mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Upper Right Latitude</span>
+        </div>
+        <input type="number" id="upperRightLatitude" class="form-control"
+            placeholder="Enter an upper-right latitude value.">
+    </div>
+
+    <div class="input-group input-group-sm mb-2">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Upper Right Longitude</span>
+        </div>
+        <input type="number" id="upperRightLongitude" class="form-control"
+            placeholder="Enter an upper-right longitude value.">
+    </div>
+
+    <button class="btn btn-primary btn-lg btn-block" id="getFromLocationName" type="button">
+        Get From Location Name
+    </button>
+
+    <div style="width:100%;height:100px;background-color:#e5e7e9;overflow:auto;">
+        <label id="getFromLocationNameLog" style="margin:0;"></label>
+    </div>
+
+    <script src="cordova.js"></script>
+    <script src="js/geocoder.js"></script>
+    <script crossorigin="anonymous" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,18 +1,18 @@
 /*
-    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
-
-    Licensed under the Apache License, Version 2.0 (the "License")
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        https://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-*/
+ * Copyright 2020-2025. Huawei Technologies Co., Ltd. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License")
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.huawei.hms.cordova.location.services;
 
@@ -25,6 +25,7 @@ import android.content.IntentSender;
 import android.location.Location;
 import android.os.Looper;
 import android.util.Log;
+import android.os.Build;
 
 import com.huawei.hmf.tasks.Task;
 import com.huawei.hms.common.ResolvableApiException;
@@ -64,13 +65,13 @@ import java.util.Objects;
 public class FusedLocationService extends CordovaBaseModule {
     private static final String TAG = FusedLocationService.class.getSimpleName();
 
-    private FusedLocationProviderClient client;
+    private final FusedLocationProviderClient client;
+
+    private final Map<Integer, PendingIntent> pendingIntentRequestMap;
+
+    private final Map<Integer, LocationCallbackHandler> locationCallbackRequestMap;
 
     private LogConfig logConfig;
-
-    private Map<Integer, PendingIntent> pendingIntentRequestMap;
-
-    private Map<Integer, LocationCallbackHandler> locationCallbackRequestMap;
 
     private Promise activityResultCb;
 
@@ -89,20 +90,12 @@ public class FusedLocationService extends CordovaBaseModule {
 
     @CordovaMethod
     @HMSLog
-    public void disableBackgroundLocation(final CorPack corPack, JSONArray args, final Promise cb)
-        throws JSONException {
-            try{
-                client.disableBackgroundLocation();
-                cb.success();
-            }
-            catch(Exception e){
-                cb.error(e.getMessage());
-            }
-        // client.disableBackgroundLocation().addOnSuccessListener(aVoid -> {
-        //     cb.success();
-        // }).addOnFailureListener(e -> {
-        //     cb.error(e.getMessage());
-        // });
+    public void disableBackgroundLocation(final CorPack corPack, JSONArray args, final Promise cb) {
+        client.disableBackgroundLocation().addOnSuccessListener(aVoid -> {
+            cb.success();
+        }).addOnFailureListener(e -> {
+            cb.error(e.getMessage());
+        });
     }
 
     @CordovaMethod
@@ -116,10 +109,12 @@ public class FusedLocationService extends CordovaBaseModule {
         }
         JSONObject json = new JSONObject(args.getString(1));
         Notification mNotification = LocationUtils.buildNotification(corPack.getCordova().getContext(), json);
-        client.enableBackgroundLocation(args.getInt(0), mNotification).addOnFailureListener(e -> {
+        client.enableBackgroundLocation(args.getInt(0), mNotification).addOnSuccessListener( s -> {
+            cb.success();
+        }).addOnFailureListener ( e -> {
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-        });
-        cb.success();
+            cb.error(e.getMessage());
+        }); 
     }
 
     @CordovaMethod
@@ -158,8 +153,14 @@ public class FusedLocationService extends CordovaBaseModule {
             String function = args.getString(2);
             LocationUtils.saveBackgroundTask(corPack.getCordova().getContext(),
                 Constants.FunctionType.LOCATION_FUNCTION, function);
-            PendingIntent pendingIntent = LocationUtils.getPendingIntent(corPack.getCordova().getContext(),
+            PendingIntent pendingIntent;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                pendingIntent = LocationUtils.getPendingIntent(corPack.getCordova().getContext(),
+                LocationBroadcastReceiver.ACTION_PROCESS_LOCATION, requestCode, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+            } else {
+                pendingIntent = LocationUtils.getPendingIntent(corPack.getCordova().getContext(),
                 LocationBroadcastReceiver.ACTION_PROCESS_LOCATION, requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
+            }
             pendingIntentRequestMap.put(requestCode, pendingIntent);
             client.requestLocationUpdates(locationRequest, pendingIntent)
                 .addOnSuccessListener(aVoid -> cb.success(true))
@@ -369,6 +370,7 @@ public class FusedLocationService extends CordovaBaseModule {
         }
         settingsClient.setLogConfig(logConfig).addOnFailureListener(e -> {
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+            cb.error(e.getMessage());
         });
         cb.success();
     }
