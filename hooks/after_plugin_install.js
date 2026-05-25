@@ -34,7 +34,7 @@ var TARGET_REGEX = new RegExp(TARGET_ATTRIBUTE + '="([^"]+)"');
 module.exports = function (context) {
   if (!FSUtils.exists(ROOT_BUILD_GRADLE_FILE)) {
     console.log(
-      "root gradle file does not exist. after_plugin_install script wont be executed."
+      "root gradle file does not exist. after_plugin_install script wont be executed.",
     );
   }
 
@@ -43,9 +43,6 @@ module.exports = function (context) {
 
   var depAddedLines = addAGConnectDependency(lines);
   var repoAddedLines = addHuaweiRepo(depAddedLines);
-  depAddedLines = addR8Dependency(depAddedLines);
-
-  FSUtils.writeFile(ROOT_BUILD_GRADLE_FILE, depAddedLines.join(NEW_LINE));
 
   FSUtils.writeFile(ROOT_BUILD_GRADLE_FILE, repoAddedLines.join(NEW_LINE));
 
@@ -57,7 +54,7 @@ module.exports = function (context) {
 
   FSUtils.writeFile(
     APP_BUILD_GRADLE_FILE,
-    packageOptionsAddedLines.join(NEW_LINE)
+    packageOptionsAddedLines.join(NEW_LINE),
   );
 
   addAndroidManifestAttribute(APP_ANDROID_MANIFEST_FILE);
@@ -162,27 +159,4 @@ function updateRepositoriesGradle(file) {
       FSUtils.writeFile(file, repoGradleContent);
     }
   }
-}
-
-function addR8Dependency(lines) {
-  let R8_DEPENDENCY = 'classpath "com.android.tools:r8:8.3.37" ' + COMMENT;
-  let pattern =
-    /(\s*)classpath(\s+)[\',\"]com.android.tools.build:gradle.*[^\]\n]/m;
-  let index;
-
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
-    if (pattern.test(line)) {
-      index = i;
-      break;
-    }
-  }
-
-  if (index !== undefined) {
-    lines.splice(index + 1, 0, R8_DEPENDENCY);
-  } else {
-    console.log("Unable to find gradle dependencies block.");
-  }
-
-  return lines;
 }
